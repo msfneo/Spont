@@ -1,3 +1,8 @@
+/*
+* edited by Tahina on 07/09/2015 11:49
+* add addJavascriptInterface to bind javascript with Android class "WebAppInterface"
+* */
+
 package com.example.dan.spont;
 
 
@@ -5,14 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -20,6 +26,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import model.WebAppInterface;
 
 
 
@@ -117,15 +126,13 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setSupportMultipleWindows(true);
         mWebview.setWebViewClient(new UriWebViewClient());
+        mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
         mWebview.setWebChromeClient(new UriChromeClient());
         mWebview.loadUrl(target_url);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
-
         mContext=this.getApplicationContext();
-
     }
-
 
     private class UriWebViewClient extends WebViewClient {
         @Override
