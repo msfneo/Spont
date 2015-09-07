@@ -1,15 +1,8 @@
 package model;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.webkit.JavascriptInterface;
-import android.webkit.ValueCallback;
-import android.widget.Toast;
-
 import com.example.dan.spont.MainActivity;
 
 import java.io.File;
@@ -20,19 +13,19 @@ import java.io.File;
 public class WebAppInterface {
     private Context mContext;
     private final static int REQUEST_FILE_PICKER=1;
-    private final static int FILECHOOSER_RESULTCODE=1;
-    private String currentPicFile;
 
     public WebAppInterface(Context mContext_) {
         this.mContext = mContext_;
     }
 
-    @JavascriptInterface   // must be added for API 17 or higher
-    public void uploadImage() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        //intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        ((MainActivity)this.mContext).startActivityForResult(Intent.createChooser(intent, "File Chooser"), FILECHOOSER_RESULTCODE);
+    @JavascriptInterface
+    public void uploadImage(String offerId_, String mobilePhone_, String password_) {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Globals Globals = new Globals();
+        Globals.offerId = offerId_;
+        Globals.mobilePhone = mobilePhone_;
+        Globals.password = password_;
+        ((MainActivity)mContext).startActivityForResult(galleryIntent, REQUEST_FILE_PICKER);
     }
-
 }

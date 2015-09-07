@@ -18,15 +18,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+
+import Task.FileUploaderTask;
+import model.Globals;
 import model.WebAppInterface;
 
 
@@ -34,17 +34,17 @@ public class MainActivity extends AppCompatActivity {
     /* URL saved to be loaded after fb login */
     private static final String target_url="http://app.spont.fr";
     private static final String target_url_prefix="app.spont.fr";
-    private static final int FILECHOOSER_RESULTCODE = 1;
+    private static final int REQUEST_FILE_PICKER = 1;
     private Context mContext;
     private WebView mWebview;
     private WebView mWebviewPop;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
     {
-        if (resultCode == FILECHOOSER_RESULTCODE)
+        if (requestCode == REQUEST_FILE_PICKER)
         {
-            Toast.makeText(mContext, "return : gallerie", Toast.LENGTH_SHORT).show();
-            mWebview.loadUrl("javascript:changeThumb('rien')");
+            new FileUploaderTask(this.mContext,intent.getData(),this.mWebview).execute();
         }
     }
 
@@ -53,12 +53,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // final View controlsView =
-        // findViewById(R.id.fullscreen_content_controls);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         mWebview = (WebView) findViewById(R.id.webview);
-        //mWebviewPop = (WebView) findViewById(R.id.webviewPop);
         WebSettings webSettings = mWebview.getSettings();
         mWebview.getSettings().setJavaScriptEnabled(true);
         mWebview.getSettings().setLoadWithOverviewMode(true);
@@ -108,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler,
                                        SslError error) {
-            Log.d("onReceivedSslError", "onReceivedSslError");
+//            Log.d("onReceivedSslError", "onReceivedSslError");
             //super.onReceivedSslError(view, handler, error);
         }
     }
