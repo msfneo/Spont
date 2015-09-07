@@ -27,9 +27,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import model.WebAppInterface;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private WebView mWebview;
     private WebView mWebviewPop;
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
     {
@@ -51,12 +48,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mWebview = new WebView(this);
-
-
         setContentView(R.layout.activity_main);
         // final View controlsView =
         // findViewById(R.id.fullscreen_content_controls);
