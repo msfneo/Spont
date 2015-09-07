@@ -32,10 +32,10 @@ import model.Globals;
  */
 public class FileUploaderTask extends AsyncTask<String, String, String> {
     private Context mContext;
-    private Uri pathFile;
+    private String pathFile;
     private WebView mWebView;
 
-    public FileUploaderTask(Context mContext_, Uri pathFile_, WebView mWebView_) {
+    public FileUploaderTask(Context mContext_, String pathFile_, WebView mWebView_) {
         this.mContext = mContext_;
         this.pathFile = pathFile_;
         this.mWebView = mWebView_;
@@ -50,8 +50,9 @@ public class FileUploaderTask extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... params) {
         System.out.println(Globals.offerId);
+        System.out.println(pathFile);
         HttpClient client = new DefaultHttpClient();
-        File imageFile = new File(getRealPathFromURI(this.mContext, this.pathFile));
+        File imageFile = new File(this.pathFile);
         System.out.println(imageFile.getAbsolutePath());
         HttpPost postRequest = new HttpPost ("http://app.spont.fr/upload_image/"+Globals.offerId);
         MultipartEntity multiPartEntity = new MultipartEntity () ;
@@ -115,21 +116,6 @@ public class FileUploaderTask extends AsyncTask<String, String, String> {
         }
         client.getConnectionManager().shutdown();
         return null;
-    }
-
-    public String getRealPathFromURI(Context context, Uri contentUri) {
-        Cursor cursor = null;
-        try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            return cursor.getString(column_index);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
     @Override

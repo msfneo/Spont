@@ -8,10 +8,12 @@ package com.example.dan.spont;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,6 +27,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.io.File;
+
 import Task.FileUploaderTask;
 import model.Globals;
 import model.WebAppInterface;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String target_url="http://app.spont.fr";
     private static final String target_url_prefix="app.spont.fr";
     private static final int REQUEST_FILE_PICKER = 1;
+    private final static int TAKE_A_PIC=2;
     private Context mContext;
     private WebView mWebview;
     private WebView mWebviewPop;
@@ -42,9 +47,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
     {
-        if (requestCode == REQUEST_FILE_PICKER)
+        System.out.println("REQUEST CODE=>"+requestCode);
+        if (requestCode == REQUEST_FILE_PICKER || requestCode == TAKE_A_PIC)
         {
-            new FileUploaderTask(this.mContext,intent.getData(),this.mWebview).execute();
+            String imagePath = "";
+            if (requestCode == REQUEST_FILE_PICKER)
+                imagePath = getRealPathFromURI(this,intent.getData());
+            else {
+                File current_file = new File(android.os.Environment
+                        .getExternalStorageDirectory()
+                        + File.separator
+                        + "Spont", "temp.jpg");
+                Uri uriImage = Uri.fromFile(current_file);
+                imagePath = uriImage.getPath();
+            }
+            new FileUploaderTask(this.mContext,imagePath,this.mWebview).execute();
         }
     }
 
@@ -125,17 +142,31 @@ public class MainActivity extends AppCompatActivity {
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
             transport.setWebView(mWebviewPop);
             resultMsg.sendToTarget();
-
             return true;
         }
-
         @Override
         public void onCloseWindow(WebView window) {
             Log.d("onCloseWindow", "called");
         }
 
     }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
 }
+
 
 
 
