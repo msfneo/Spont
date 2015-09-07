@@ -36,26 +36,18 @@ public class MainActivity extends AppCompatActivity {
     /* URL saved to be loaded after fb login */
     private static final String target_url="http://app.spont.fr";
     private static final String target_url_prefix="app.spont.fr";
+    private static final int FILECHOOSER_RESULTCODE = 1;
     private Context mContext;
     private WebView mWebview;
     private WebView mWebviewPop;
-    private ValueCallback<Uri> mUploadMessage;
-    private final static int FILECHOOSER_RESULTCODE=1;
-    private static final int REQUEST_FILE_PICKER = 1;
-    private ValueCallback<Uri> mFilePathCallback4;
-    private ValueCallback<Uri[]> mFilePathCallback5;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
     {
-        if(requestCode==FILECHOOSER_RESULTCODE)
+        if (resultCode == FILECHOOSER_RESULTCODE)
         {
-            if (null == mUploadMessage) return;
-            Uri result = intent == null || resultCode != RESULT_OK ? null
-                    : intent.getData();
-            mUploadMessage.onReceiveValue(result);
-            mUploadMessage = null;
-
+            Toast.makeText(mContext, "return : gallerie", Toast.LENGTH_SHORT).show();
+            mWebview.loadUrl("javascript:changeThumb('rien')");
         }
     }
 
@@ -63,50 +55,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mWebview = new WebView(this);
-        mWebview.setWebViewClient(new WebViewClient());
-        mWebview.setWebChromeClient(new WebChromeClient()
-        {
-            //The undocumented magic method override
-            //Eclipse will swear at you if you try to put @Override here
-            public void openFileChooser(ValueCallback<Uri> filePathCallback)
-            {
-                mFilePathCallback4 = filePathCallback;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "File Chooser"), REQUEST_FILE_PICKER);
-            }
-
-            public void openFileChooser(ValueCallback filePathCallback, String acceptType)
-            {
-                mFilePathCallback4 = filePathCallback;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "File Chooser"), REQUEST_FILE_PICKER);
-            }
-
-            public void openFileChooser(ValueCallback<Uri> filePathCallback, String acceptType, String capture)
-            {
-                mFilePathCallback4 = filePathCallback;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "File Chooser"), REQUEST_FILE_PICKER);
-            }
-
-            @Override
-            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams)
-            {
-                mFilePathCallback5 = filePathCallback;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent, "File Chooser"), REQUEST_FILE_PICKER);
-                return true;
-            }
-        });
-
 
 
         setContentView(R.layout.activity_main);
