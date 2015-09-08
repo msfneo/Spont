@@ -9,6 +9,8 @@ package com.example.dan.spont;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import java.io.File;
 
 import Task.FileUploaderTask;
 import model.Globals;
+import model.LocationListener;
 import model.WebAppInterface;
 
 
@@ -78,18 +81,20 @@ public class MainActivity extends AppCompatActivity {
         mWebview.getSettings().setLoadWithOverviewMode(true);
         mWebview.getSettings().setUseWideViewPort(true);
         mWebview.setInitialScale(1);
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setAppCacheEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-        webSettings.setSupportMultipleWindows(true);
+        //mWebview.getSettings().setAppCacheEnabled(true);
+        mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        mWebview.getSettings().setSupportMultipleWindows(true);
         mWebview.setWebViewClient(new UriWebViewClient());
-        mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
+        LocationManager lm =   (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mWebview.setWebChromeClient(new UriChromeClient());
+//        mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
+        mWebview.addJavascriptInterface(new WebAppInterface(this,mWebview,lm), "Android");
         mWebview.loadUrl(target_url);
         mWebview.loadUrl("javascript:js_android_getGeo()");
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         mContext=this.getApplicationContext();
+//        new WebAppInterface(mContext, mWebview, lm);
     }
 
     private class UriWebViewClient extends WebViewClient {

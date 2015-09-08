@@ -22,13 +22,14 @@ public class LocationListener extends MainActivity {
     String latitude2 = Double.toString(longitude);
 
 
-        @JavascriptInterface
-        public void updateLocation(String mobilePhone_, String password_) {
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-            Globals.mobilePhone = mobilePhone_;
-            Globals.password = password_;
-            webView.loadUrl("javascript:android_getGeo("+mobilePhone_+", "+ password_+","+ latitude2+","+longitude2+")");
-        }
+    @JavascriptInterface
+    public void updateLocation(String mobilePhone_, String password_) {
+        System.out.println("J UPDATE LOCATION");
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+        Globals.mobilePhone = mobilePhone_;
+        Globals.password = password_;
+        webView.loadUrl("javascript:android_getGeo("+mobilePhone_+", "+ password_+","+ latitude2+","+longitude2+")");
+    }
 
 }
