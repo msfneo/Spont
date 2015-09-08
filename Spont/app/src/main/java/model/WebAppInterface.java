@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -24,21 +25,16 @@ import Task.UpdateLocationTask;
 /**
  * Created by ramani on 07/09/2015.
  */
-public class WebAppInterface implements android.location.LocationListener {
+public class WebAppInterface {
     private Context mContext;
     private final static int REQUEST_FILE_PICKER=1;
     private final static int TAKE_A_PIC=2;
     private WebView mWebView;
-    private LocationManager lm;
-    private String longitude;
-    private String latitude;
     private String baseUrl;
 
     public WebAppInterface(Context mContext_, WebView mWebView_, String baseUrl_) {
         this.mContext = mContext_;
         this.mWebView = mWebView_;
-        this.lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        this.lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,10000,1, this);
         this.baseUrl = baseUrl_;
     }
 
@@ -75,43 +71,9 @@ public class WebAppInterface implements android.location.LocationListener {
         System.out.println("appel a updateLocation()");
         Globals.mobilePhone = mobilePhone_;
         Globals.password = password_;
-        if (this.longitude != null && this.latitude != null) {
-            System.out.println("new location : "+this.longitude+" "+this.latitude);
-            new UpdateLocationTask(this.baseUrl, this.longitude, this.latitude).execute();
+        if (Globals.longitude != null && Globals.latitude != null) {
+            System.out.println("new location : "+Globals.longitude+" "+Globals.latitude);
+            new UpdateLocationTask(this.baseUrl, Globals.longitude, Globals.latitude).execute();
         }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        this.longitude = String.valueOf(location.getLongitude());
-        this.latitude = String.valueOf(location.getLatitude());
-        Toast.makeText(this.mContext, "YOU ARE MOVING",
-                Toast.LENGTH_SHORT).show();
-        if (Globals.mobilePhone != null && Globals.password != null) {
-            this.mWebView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mWebView.loadUrl("javascript:js_android_getGeo()");
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Toast.makeText(this.mContext, "Gps is turned on!! ",
-                Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        this.mContext.startActivity(intent);
-        Toast.makeText(this.mContext, "Gps is turned off!! ",
-                Toast.LENGTH_SHORT).show();
     }
 }

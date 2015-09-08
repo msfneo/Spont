@@ -7,4 +7,6 @@ public class Globals {
     public static String offerId;
     public static String mobilePhone;
     public static String password;
+    public static String longitude;
+    public static String latitude;
 }
