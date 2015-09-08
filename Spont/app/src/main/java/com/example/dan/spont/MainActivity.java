@@ -69,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (newConfig.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            super.onConfigurationChanged(newConfig);
+        }
     }
 
     @Override
@@ -89,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         mWebview.getSettings().setSupportMultipleWindows(true);
         mWebview.setWebViewClient(new UriWebViewClient());
         mWebview.setWebChromeClient(new UriChromeClient());
+        mWebview.getSettings().setUserAgentString(this.mWebview.getSettings().getUserAgentString()
+                + " "
+                + getString(R.string.user_agent_suffix));
         mWebview.addJavascriptInterface(new WebAppInterface(this,this.mWebview,this.target_url), "Android");
         mWebview.loadUrl(target_url);
         ActionBar actionBar = getSupportActionBar();

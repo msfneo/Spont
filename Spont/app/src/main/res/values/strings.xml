@@ -5,4 +5,5 @@
     <string name="action_settings">Settings</string>
     <string name="capture">Prendre une photo</string>
     <string name="cancel">Annuler</string>
+    <string name="user_agent_suffix">Spont/1.0</string>
 </resources>
