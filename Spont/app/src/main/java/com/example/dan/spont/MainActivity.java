@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
         mWebview.setWebChromeClient(new UriChromeClient());
         mWebview.loadUrl(target_url);
+        mWebview.loadUrl("javascript:js_android_getGeo()");
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         mContext=this.getApplicationContext();
