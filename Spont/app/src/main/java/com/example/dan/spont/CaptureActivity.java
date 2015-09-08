@@ -9,6 +9,9 @@ package com.example.dan.spont;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -35,43 +38,43 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 import Task.FileUploaderTask;
+import Task.Helper;
 import model.WebAppInterface;
 
 
 public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.Callback {
-    private Context mContext;
-    Camera camera;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
-
-    Camera.PictureCallback rawCallback;
-    Camera.ShutterCallback shutterCallback;
-    Camera.PictureCallback jpegCallback;
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
-    {
-    }
+    private Camera camera;
+    private SurfaceView surfaceView;
+    private SurfaceHolder surfaceHolder;
+    private Camera.PictureCallback jpegCallback;
+    private boolean takingPicture = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.capture_activity);
-        mContext=this.getApplicationContext();
-        surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
-        surfaceHolder = surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        jpegCallback = new Camera.PictureCallback() {
+        this.surfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+        this.surfaceHolder = surfaceView.getHolder();
+        this.surfaceHolder.addCallback(this);
+        this.surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        this.jpegCallback = new Camera.PictureCallback() {
             public void onPictureTaken(byte[] data, Camera camera) {
                 FileOutputStream outStream = null;
                 try {
-                    outStream = new FileOutputStream(String.format("/sdcard/%d.jpg", System.currentTimeMillis()));
+                    String tmpName = String.format("/sdcard/%d.jpg", System.currentTimeMillis());
+                    outStream = new FileOutputStream(tmpName);
                     outStream.write(data);
                     outStream.close();
+                    //rotate the original file
+                    Helper.rotateBitmap(tmpName);
+                    Intent output = new Intent();
+                    output.putExtra("imagePath",tmpName);
+                    setResult(RESULT_OK, output);
+                    finish();
                     Log.d("Log", "onPictureTaken - wrote bytes: " + data.length);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -79,7 +82,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
                     e.printStackTrace();
                 } finally {
                 }
-                Toast.makeText(getApplicationContext(), "Picture Saved", Toast.LENGTH_SHORT).show();
+                takingPicture = false;
                 refreshCamera();
             }
         };
@@ -88,17 +91,18 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         try {
-            camera = Camera.open();
+            this.camera = Camera.open();
         } catch (RuntimeException e) {
             System.err.println(e);
             return;
         }
-        Camera.Parameters param;
-        param = camera.getParameters();
-        param.setPreviewSize(352, 288);
-        camera.setParameters(param);
+        Camera.Parameters params = camera.getParameters();
+        List<Camera.Size> sizes = params.getSupportedPreviewSizes();
+        Camera.Size selected = sizes.get(0);
+        params.setPreviewSize(selected.width,selected.height);
+        camera.setParameters(params);
         try {
-            camera.setPreviewDisplay(surfaceHolder);
+            camera.setDisplayOrientation(90);
             camera.startPreview();
         } catch (Exception e) {
             System.err.println(e);
@@ -119,7 +123,9 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     }
 
     public void captureImage(View v) throws IOException {
-        camera.takePicture(null, null, jpegCallback);
+        if (this.takingPicture == false) {
+            camera.takePicture(null, null, jpegCallback);
+        }
     }
 
     public void refreshCamera() {
@@ -136,11 +142,4 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         } catch (Exception e) {
         }
     }
-
-
-
 }
-
-
-
-

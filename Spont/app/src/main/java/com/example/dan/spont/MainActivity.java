@@ -50,21 +50,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,  Intent intent)
     {
-        System.out.println("REQUEST CODE=>"+requestCode);
-        if (requestCode == REQUEST_FILE_PICKER || requestCode == TAKE_A_PIC)
-        {
-            String imagePath = "";
-            if (requestCode == REQUEST_FILE_PICKER)
-                imagePath = getRealPathFromURI(this,intent.getData());
-            else {
-                File current_file = new File(android.os.Environment
-                        .getExternalStorageDirectory()
-                        + File.separator
-                        + "Spont", "temp.jpg");
-                Uri uriImage = Uri.fromFile(current_file);
-                imagePath = uriImage.getPath();
+        if (resultCode == MainActivity.RESULT_OK) {
+            if (requestCode == REQUEST_FILE_PICKER || requestCode == TAKE_A_PIC)
+            {
+                String imagePath = "";
+                if (requestCode == REQUEST_FILE_PICKER)
+                    imagePath = getRealPathFromURI(this,intent.getData());
+                else {
+                    imagePath = intent.getStringExtra("imagePath");
+                }
+                new FileUploaderTask(this.mContext,imagePath,this.mWebview).execute();
             }
-            new FileUploaderTask(this.mContext,imagePath,this.mWebview).execute();
         }
     }
 
@@ -86,14 +82,11 @@ public class MainActivity extends AppCompatActivity {
         mWebview.getSettings().setSupportMultipleWindows(true);
         mWebview.setWebViewClient(new UriWebViewClient());
         mWebview.setWebChromeClient(new UriChromeClient());
-//        mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
         mWebview.addJavascriptInterface(new WebAppInterface(this,this.mWebview,this.target_url), "Android");
         mWebview.loadUrl(target_url);
-        //mWebview.loadUrl("javascript:js_android_getGeo()");
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         mContext=this.getApplicationContext();
-//        new WebAppInterface(mContext, mWebview, lm);
     }
 
     private class UriWebViewClient extends WebViewClient {
@@ -171,7 +164,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
-
-
-

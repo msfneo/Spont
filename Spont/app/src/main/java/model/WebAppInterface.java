@@ -56,16 +56,6 @@ public class WebAppInterface implements android.location.LocationListener {
             @Override
             public void onClick(DialogInterface dialog, int item) {
                 if (items[item].equals("Prendre une photo")) {
-                    /*String root = Environment.getExternalStorageDirectory().toString();
-                    File myDir = new File(root + "/Spont");
-                    myDir.mkdirs();
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File current_file = new File(android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Spont", "temp.jpg");
-                    Uri uriImage = Uri.fromFile(current_file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage);*/
                     Intent intent = new Intent(mContext, CaptureActivity.class);
                     ((MainActivity)mContext).startActivityForResult(intent, TAKE_A_PIC);
                 } else if (items[item].equals("Choisir dans la galerie")) {
@@ -95,10 +85,10 @@ public class WebAppInterface implements android.location.LocationListener {
     public void onLocationChanged(Location location) {
         this.longitude = String.valueOf(location.getLongitude());
         this.latitude = String.valueOf(location.getLatitude());
-        Toast.makeText(mContext, "YOU ARE MOVING",
+        Toast.makeText(this.mContext, "YOU ARE MOVING",
                 Toast.LENGTH_SHORT).show();
         if (Globals.mobilePhone != null && Globals.password != null) {
-            mWebView.post(new Runnable() {
+            this.mWebView.post(new Runnable() {
                 @Override
                 public void run() {
                     mWebView.loadUrl("javascript:js_android_getGeo()");
@@ -109,7 +99,7 @@ public class WebAppInterface implements android.location.LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Toast.makeText(mContext, "Gps is turned on!! ",
+        Toast.makeText(this.mContext, "Gps is turned on!! ",
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -120,8 +110,8 @@ public class WebAppInterface implements android.location.LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        mContext.startActivity(intent);
-        Toast.makeText(mContext, "Gps is turned off!! ",
+        this.mContext.startActivity(intent);
+        Toast.makeText(this.mContext, "Gps is turned off!! ",
                 Toast.LENGTH_SHORT).show();
     }
 }
