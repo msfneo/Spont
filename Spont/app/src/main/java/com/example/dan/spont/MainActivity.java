@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_FILE_PICKER = 1;
     private final static int TAKE_A_PIC=2;
     private Context mContext;
-    private WebView mWebview;
+    public WebView mWebview;
     private WebView mWebviewPop;
 
     @Override
@@ -85,12 +85,11 @@ public class MainActivity extends AppCompatActivity {
         mWebview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebview.getSettings().setSupportMultipleWindows(true);
         mWebview.setWebViewClient(new UriWebViewClient());
-        LocationManager lm =   (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mWebview.setWebChromeClient(new UriChromeClient());
 //        mWebview.addJavascriptInterface(new WebAppInterface(this), "Android");
-        mWebview.addJavascriptInterface(new WebAppInterface(this,mWebview,lm), "Android");
+        mWebview.addJavascriptInterface(new WebAppInterface(this,this.mWebview,this.target_url), "Android");
         mWebview.loadUrl(target_url);
-        mWebview.loadUrl("javascript:js_android_getGeo()");
+        //mWebview.loadUrl("javascript:js_android_getGeo()");
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         mContext=this.getApplicationContext();

@@ -4,34 +4,42 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
+import android.location.*;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.example.dan.spont.CaptureActivity;
 import com.example.dan.spont.MainActivity;
 
 import java.io.File;
 
+import Task.UpdateLocationTask;
+
 /**
  * Created by ramani on 07/09/2015.
  */
-public class WebAppInterface {
+public class WebAppInterface implements android.location.LocationListener {
     private Context mContext;
     private final static int REQUEST_FILE_PICKER=1;
     private final static int TAKE_A_PIC=2;
     private WebView mWebView;
     private LocationManager lm;
+    private String longitude;
+    private String latitude;
+    private String baseUrl;
 
-
-    public WebAppInterface(Context mContext_, WebView mWebView_, LocationManager lm_) {
+    public WebAppInterface(Context mContext_, WebView mWebView_, String baseUrl_) {
         this.mContext = mContext_;
         this.mWebView = mWebView_;
-        this.lm =   lm_;
+        this.lm = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        this.lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,10000,1, this);
+        this.baseUrl = baseUrl_;
     }
 
     @JavascriptInterface
@@ -75,22 +83,45 @@ public class WebAppInterface {
     @JavascriptInterface
     public void updateLocation(String mobilePhone_, String password_) {
         System.out.println("appel a updateLocation()");
-        Location location;
-        if (this.lm != null) {
-            location = this.lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                System.out.println("LOCATION IS NOT NULL ANYMORE");
-                double longitude = location.getLongitude();
-                double latitude = location.getLatitude();
-                Globals.mobilePhone = mobilePhone_;
-                Globals.password = password_;
-                System.out.println(longitude);
-                System.out.println(latitude);
-                System.out.println(Globals.mobilePhone);
-                System.out.println(Globals.password);
-                this.mWebView.loadUrl("javascript:android_getGeo("+mobilePhone_+", "+ password_+","+ latitude+","+longitude+")");
-            }
+        Globals.mobilePhone = mobilePhone_;
+        Globals.password = password_;
+        if (this.longitude != null && this.latitude != null) {
+            System.out.println("new location : "+this.longitude+" "+this.latitude);
+            new UpdateLocationTask(this.baseUrl, this.longitude, this.latitude).execute();
         }
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        this.longitude = String.valueOf(location.getLongitude());
+        this.latitude = String.valueOf(location.getLatitude());
+        Toast.makeText(mContext, "YOU ARE MOVING",
+                Toast.LENGTH_SHORT).show();
+        if (Globals.mobilePhone != null && Globals.password != null) {
+            mWebView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mWebView.loadUrl("javascript:js_android_getGeo()");
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Toast.makeText(mContext, "Gps is turned on!! ",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        mContext.startActivity(intent);
+        Toast.makeText(mContext, "Gps is turned off!! ",
+                Toast.LENGTH_SHORT).show();
+    }
 }
