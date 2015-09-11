@@ -1,4 +1,4 @@
-package com.example.dan.spont;
+package com.studionet.dan.spont;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

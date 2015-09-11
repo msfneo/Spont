@@ -6,7 +6,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.util.Log;
 
-import com.example.dan.spont.MainActivity;
+import com.studionet.dan.spont.MainActivity;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

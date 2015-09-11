@@ -15,13 +15,12 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.example.dan.spont.CaptureActivity;
-import com.example.dan.spont.MainActivity;
+import com.studionet.dan.spont.CaptureActivity;
+import com.studionet.dan.spont.MainActivity;
 
 import java.io.File;
 
 import Task.UpdateLocationTask;
-
 /**
  * Created by ramani on 07/09/2015.
  */

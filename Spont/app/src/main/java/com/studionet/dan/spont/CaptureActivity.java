@@ -3,7 +3,7 @@
 * add addJavascriptInterface to bind javascript with Android class "WebAppInterface"
 * */
 
-package com.example.dan.spont;
+package com.studionet.dan.spont;
 
 
 import android.content.Context;

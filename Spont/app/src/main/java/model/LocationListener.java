@@ -6,7 +6,7 @@ import android.location.LocationManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
-import com.example.dan.spont.MainActivity;
+import com.studionet.dan.spont.MainActivity;
 
 
 /**

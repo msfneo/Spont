@@ -3,7 +3,7 @@
 * add addJavascriptInterface to bind javascript with Android class "WebAppInterface"
 * */
 
-package com.example.dan.spont;
+package com.studionet.dan.spont;
 
 
 import android.content.BroadcastReceiver;
@@ -33,10 +33,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
-import com.littlefluffytoys.littlefluffylocationlibrary.LocationInfo;
-import com.littlefluffytoys.littlefluffylocationlibrary.LocationLibraryConstants;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
